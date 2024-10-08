@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define PORT 8081
+#define PORT 8087
 #define BUFFER_SIZE 10240
 
 int main() {
@@ -30,23 +30,25 @@ int main() {
     printf("Connected to server\n");
 
     // Receive the menu from the server
-    if (recv(sock, server_reply, BUFFER_SIZE, 0) < 0) {
+    bzero(server_reply, BUFFER_SIZE);
+    if (read(sock, server_reply, BUFFER_SIZE) < 0) {
         perror("Recv failed");
         return 1;
     }
     printf("%s", server_reply);
 
     while (1) {
-        printf("Enter option: ");
+        printf("Client input\n");
         fgets(message, BUFFER_SIZE, stdin);
         message[strcspn(message, "\n")] = '\0';
 
-        if (send(sock, message, strlen(message), 0) < 0) {
-            perror("Send failed");
+        bzero(server_reply, BUFFER_SIZE);
+        if (write(sock, message, strlen(message)) < 0) {
             return 1;
         }
 
-        if (recv(sock, server_reply, BUFFER_SIZE, 0) < 0) {
+        bzero(server_reply, BUFFER_SIZE);
+        if (read(sock, server_reply, BUFFER_SIZE) < 0) {
             perror("Recv failed");
             break;
         }

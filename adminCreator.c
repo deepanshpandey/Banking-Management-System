@@ -13,29 +13,23 @@ void add_admin() {
         return;
     }
 
-    // Input Admin details
-    printf("Enter Admin ID: ");
-    if (scanf("%d", &admin.id) != 1) {
-        printf("Invalid input for Admin ID.\n");
-        close(fd);
-        return;
-    }
+
 
     printf("Enter Name: ");
-    scanf(" %[^\n]%*c", admin.name);  // Read a line of text with spaces
+    scanf(" %s", admin.name);  // Read a line of text with spaces
 
     printf("Enter Email: ");
-    scanf(" %[^\n]%*c", admin.email);  // Read a line of text with spaces
+    scanf(" %s", admin.email);  // Read a line of text with spaces
 
     printf("Enter Password: ");
-    scanf(" %[^\n]%*c", admin.password);  // Read a line of text with spaces
+    scanf(" %s", admin.password);  // Read a line of text with spaces
 
     // Write the admin structure to the file
-    ssize_t written = write(fd, &admin, sizeof(Admin));
-    if (written == sizeof(Admin)) {
-        printf("Admin added successfully!\n");
-    } else {
+
+    if (write(fd, &admin, sizeof(Admin))<0) {
         printf("Error writing admin data to file.\n");
+    } else {
+        printf("Admin added successfully!\n");
     }
 
     close(fd);

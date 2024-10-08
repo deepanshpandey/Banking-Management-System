@@ -4,8 +4,11 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include "db.h"
+#include "admin/admintasks.h"
 
-#define PORT 8081
+#define PORT 8087
 #define BUFFER_SIZE 10240
 
 void *handle_client(void *socket_desc) {
@@ -20,27 +23,38 @@ void *handle_client(void *socket_desc) {
                         "4. Admin Login\n";
     send(new_socket, menu, strlen(menu), 0);
 
-    while ((read_size = recv(new_socket, buffer, BUFFER_SIZE, 0)) > 0) {
-        buffer[read_size] = '\0';
+    while ((read_size = read(new_socket, buffer, BUFFER_SIZE)) > 0) {
         int option = atoi(buffer);
 
         switch (option) {
             case 1:
-                send(new_socket, "Customer Login\n", 23, 0);
-            break;
+                write(new_socket, "Customer Login\n", 23);
+                break;
             case 2:
-                send(new_socket, "Employee Login\n", 23, 0);
-            break;
+                write(new_socket, "Employee Login\n", 23);
+                break;
             case 3:
-                send(new_socket, "Manager Login\n", 23, 0);
-            break;
-            case 4:
-                send(new_socket, "Admin Login\n", 23, 0);
-            break;
+                write(new_socket, "Manager Login\n", 23);
+                break;
+            case 4: {
+                char email[50], password[50];
+                write(new_socket, "Enter Email: ", 13);
+                read(new_socket, email, 50);
+                write(new_socket, "Enter Password: ", 16);
+                read(new_socket, password, 50);
+                if (verify_admin(email, password) == 1) {
+                    write(new_socket, "Admin Login Successful\n", 23);
+                } else {
+                    write(new_socket, "Invalid Admin Credentials\n", 26);
+                    write(new_socket, menu, strlen(menu));
+                }
+                break;
+            }
             default:
-                send(new_socket, "Invalid option. Please select again.\n", 37, 0);
-            send(new_socket, menu, strlen(menu), 0);
-            break;
+                write(new_socket, "Invalid option. Please select again\n", 37);
+                bzero(new_socket, BUFFER_SIZE);
+                write(new_socket, menu, strlen(menu));
+                break;
         }
     }
 
