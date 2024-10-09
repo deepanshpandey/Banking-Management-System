@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 
 #define PORT 8091
-#define BUFFER_SIZE 10240
+#define BUFFER_SIZE 102400
 
 int main() {
     int sock;

@@ -10,7 +10,7 @@
 #include "employee/emptasks.h"
 #include "customer/customertasks.h"
 #define PORT 8091
-#define BUFFER_SIZE 10240
+#define BUFFER_SIZE 102400
 
 void *handle_client(void *socket_desc) {
     int new_socket = *(int *)socket_desc;
@@ -337,7 +337,7 @@ void *handle_client(void *socket_desc) {
                         "5.Modify bank customer details\n"
                         "6.Change password\n"
                         "7.Logout\n";
-                    send(new_socket, admin_menu, strlen(admin_menu), 0);
+                    write(new_socket, admin_menu, strlen(admin_menu));
                     int admin_option=atoi(buffer);
                     switch (admin_option) {
                         case 1:case 2: {
