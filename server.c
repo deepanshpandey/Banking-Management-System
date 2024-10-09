@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include "db.h"
 #include "admin/admintasks.h"
-
 #define PORT 8091
 #define BUFFER_SIZE 10240
 
@@ -38,16 +37,162 @@ void *handle_client(void *socket_desc) {
                 break;
             case 4: {
                 char email[50], password[50];
-                char* msg="Enter Email: ";
-                write(new_socket, msg, sizeof(msg));
+                write(new_socket, "Enter Email:", 12);
                 read(new_socket, email, sizeof(email)-1);
                 email[strcspn(email, "\n")] = '\0';
-                msg="Enter Password: ";
-                write(new_socket, msg, sizeof(msg));
+                write(new_socket, "Enter Password:", 15);
                 read(new_socket, password, sizeof(password)-1);
                 password[strcspn(password, "\n")] = '\0';
                 if (verify_admin(email, password) == 1) {
                     write(new_socket, "Admin Login Successful\n", 23);
+                    const char *admin_menu = "Select an option:\n"
+                        "1.Add new bank employee\n"
+                        "2.Add new bank manager\n"
+                        "3.Add new bank customer\n"
+                        "4.Modify bank employee details\n"
+                        "5.Modify bank manager details\n"
+                        "6.Modify bank customer details\n"
+                        "7.Logout\n";
+                    send(new_socket, admin_menu, strlen(admin_menu), 0);
+                    int admin_option=atoi(buffer);
+                    switch (admin_option) {
+                        case 1:case 2: {
+                            int id;
+                            char name[50], email[50], password[50];
+                            int is_manager;
+                            write(new_socket, "Enter Employee ID:", 19);
+                            read(new_socket,id,sizeof(id));
+                            write(new_socket, "Enter Employee Name:", 21);
+                            read(new_socket, name, sizeof(name)-1);
+                            name[strcspn(name, "\n")] = '\0';
+                            write(new_socket, "Enter Employee Email:", 22);
+                            read(new_socket, email, sizeof(email)-1);
+                            email[strcspn(email, "\n")] = '\0';
+                            write(new_socket, "Enter Employee Password:", 25);
+                            read(new_socket, password, sizeof(password)-1);
+                            password[strcspn(password, "\n")] = '\0';
+                            write(new_socket, "Enter Employee Type(1 for manager, 0 for employee):", 52);
+                            read(new_socket, is_manager, sizeof(is_manager));
+                            if(add_employee(id, name, email, password,is_manager)==1) {
+                                write(new_socket, "Employee added successfully\n", 29);
+                            }else {
+                                write(new_socket, "Employee already exists\n", 26);
+                            }
+                            break;
+                        }
+                        case 3: {
+                            //add new customer
+                            int id;
+                            char name[50], email[50], phone[15], password[50];
+                            double balance;
+                            char amount[20];
+                            int account_active=1;
+                            write(new_socket, "Enter Customer ID:", 19);
+                            read(new_socket, id, sizeof(id));
+                            if(lookup(id)==1) {
+                                //already exists
+                                write(new_socket, "Customer already exists\n", 26);
+                            }else {
+                                write(new_socket, "Enter Customer Name:", 21);
+                                read(new_socket, name, sizeof(name)-1);
+                                name[strcspn(name, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Email:", 22);
+                                read(new_socket, email, sizeof(email)-1);
+                                email[strcspn(email, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Phone:", 22);
+                                read(new_socket, phone, sizeof(phone)-1);
+                                phone[strcspn(phone, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Password:", 25);
+                                read(new_socket, password, sizeof(password)-1);
+                                password[strcspn(password, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Balance:", 25);
+                                read(new_socket, amount, sizeof(amount)-1);
+                                amount[strcspn(amount, "\n")] = '\0';
+                                balance=strtod(amount,NULL);
+                                if(add_customer(id, name, email, phone, password, balance, account_active)==1) {
+                                    write(new_socket, "Customer added successfully\n", 29);
+                                }else {
+                                    write(new_socket, "Customer addition failed\n", 27);
+                                }
+                            }
+                        }
+                        case 4: case 5:{
+                            int id;
+                            write(new_socket, "Enter Employee ID:", 19);
+                            read(new_socket, id, sizeof(id));
+
+                            if(lookup(id)==1) {
+                                //already exists
+                                char name[50], email[50], password[50];
+                                int is_manager;
+                                write(new_socket, "Enter Employee Name:", 21);
+                                read(new_socket, name, sizeof(name)-1);
+                                name[strcspn(name, "\n")] = '\0';
+                                write(new_socket, "Enter Employee Email:", 22);
+                                read(new_socket, email, sizeof(email)-1);
+                                email[strcspn(email, "\n")] = '\0';
+                                write(new_socket, "Enter Employee Password:", 25);
+                                read(new_socket, password, sizeof(password)-1);
+                                password[strcspn(password, "\n")] = '\0';
+                                write(new_socket, "Enter Employee Type(1 for manager, 0 for employee):", 52);
+                                read(new_socket, is_manager, sizeof(is_manager));
+                                if(modify_employee(id, name, email, password,is_manager)==1) {
+                                    write(new_socket, "Employee modified successfully\n", 32);
+                                }else {
+                                    write(new_socket, "Employee modification failed\n", 30);
+                                }
+                            }else {
+                                //id does not exist
+                                write(new_socket, "Employee does not exist\n", 25);
+                            }
+
+                            break;
+                        }
+                        case 6: {
+                            int id;
+                            write(new_socket, "Enter Customer ID:", 19);
+                            read(new_socket, id, sizeof(id));
+                            if(lookup(id)==1) {
+                                //already exists
+                                char name[50], email[50], phone[15], password[50];
+                                double balance;
+                                char amount[20];
+                                int account_active=1;
+                                write(new_socket, "Enter Customer Name:", 21);
+                                read(new_socket, name, sizeof(name)-1);
+                                name[strcspn(name, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Email:", 22);
+                                read(new_socket, email, sizeof(email)-1);
+                                email[strcspn(email, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Phone:", 22);
+                                read(new_socket, phone, sizeof(phone)-1);
+                                phone[strcspn(phone, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Password:", 25);
+                                read(new_socket, password, sizeof(password)-1);
+                                password[strcspn(password, "\n")] = '\0';
+                                write(new_socket, "Enter Customer Balance:", 25);
+                                read(new_socket, amount, sizeof(amount)-1);
+                                amount[strcspn(amount, "\n")] = '\0';
+                                balance=strtod(amount,NULL);
+                                if(modify_customer(id, name, email, phone, password, balance, account_active)==1) {
+                                    write(new_socket, "Customer modified successfully\n", 32);
+                                }else {
+                                    write(new_socket, "Customer modification failed\n", 30);
+                                }
+
+                            break;
+                        }
+                        case 7: {
+                            write(new_socket, "Logout\n", 7);
+                            write(new_socket,menu,strlen(menu));
+                            break;
+                        }
+                        default: {
+                            write(new_socket, "Invalid option. Please select again\n", 37);
+                            write(new_socket, admin_menu, strlen(admin_menu));
+                            break;
+                        }
+                    }
                 } else {
                     write(new_socket, "Invalid Admin Credentials\n", 26);
                     write(new_socket, menu, strlen(menu));
