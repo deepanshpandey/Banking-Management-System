@@ -22,7 +22,7 @@ void *handle_client(void *socket_desc) {
                         "2. Employee Login\n"
                         "3. Manager Login\n"
                         "4. Admin Login\n";
-    send(new_socket, menu, strlen(menu), 0);
+    write(new_socket, menu, strlen(menu));
 
     while ((read_size = read(new_socket, buffer, BUFFER_SIZE)) > 0) {
         int option = atoi(buffer);
@@ -48,7 +48,7 @@ void *handle_client(void *socket_desc) {
                                                 "7. Add FeedBack\n"
                                                 "8. View Transaction History\n"
                                                 "9. Logout\n";
-                    send(new_socket, customer_menu, strlen(customer_menu), 0);
+                    write(new_socket, customer_menu, strlen(customer_menu));
                     int customer_option=atoi(buffer);
                     switch (customer_option) {
                         case 1: {
@@ -127,7 +127,7 @@ void *handle_client(void *socket_desc) {
                                                 "5. View Assigned Loan Applications\n"
                                                 "6. Change Password\n"
                                                 "7. Logout\n";
-                    send(new_socket, employee_menu, strlen(employee_menu), 0);
+                    write(new_socket, employee_menu, strlen(employee_menu));
                     int employee_option=atoi(buffer);
                     switch (employee_option) {
                         case 1: {
@@ -258,7 +258,7 @@ void *handle_client(void *socket_desc) {
                                                 "3. Review Customer Feeedback\n"
                                                 "4. Change Password\n"
                                                 "5. Logout\n";
-                    send(new_socket, employee_menu, strlen(employee_menu), 0);
+                    write(new_socket, employee_menu, strlen(employee_menu));
                     int employee_option=atoi(buffer);
                     switch(employee_option) {
                         case 1: {
@@ -330,21 +330,19 @@ void *handle_client(void *socket_desc) {
                 if (verify_admin(email, password) == 1) {
                     write(new_socket, "Admin Login Successful\n", 23);
                     const char *admin_menu = "Select an option:\n"
-                        "1.Add new bank employee\n"
-                        "2.Add new bank manager\n"
-                        "3.Modify bank employee details\n"
-                        "4.Modify bank manager details\n"
-                        "5.Modify bank customer details\n"
-                        "6.Change password\n"
-                        "7.Logout\n";
+                        "1.Add new bank employee/manager\n"
+                        "2.Modify bank employee/manager details\n"
+                        "3.Modify bank customer details\n"
+                        "4.Change password\n"
+                        "5.Logout\n";
                     write(new_socket, admin_menu, strlen(admin_menu));
                     int admin_option=atoi(buffer);
                     switch (admin_option) {
-                        case 1:case 2: {
+                        case 1: {
                             int id;
                             char name[50], email[50], password[50];
                             int is_manager=(admin_option==1)?0:1;;
-                            write(new_socket, "Enter Employee ID:", 19);
+                            write(new_socket, "Enter Employee ID1:", 20);
                             read(new_socket,id,sizeof(id));
                             write(new_socket, "Enter Employee Name:", 21);
                             read(new_socket, name, sizeof(name)-1);
@@ -355,6 +353,8 @@ void *handle_client(void *socket_desc) {
                             write(new_socket, "Enter Employee Password:", 25);
                             read(new_socket, password, sizeof(password)-1);
                             password[strcspn(password, "\n")] = '\0';
+                            write(new_socket, "Enter Employee Type(1 for manager, 0 for employee):", 52);
+                            read(new_socket, is_manager, sizeof(is_manager));
                             if(add_employee(id, name, email, password,is_manager)==1) {
                                 write(new_socket, "Employee added successfully\n", 29);
                             }else {
@@ -362,7 +362,8 @@ void *handle_client(void *socket_desc) {
                             }
                             break;
                         }
-                        case 3: case 4:{
+
+                        case 2:{
                             int id;
                             write(new_socket, "Enter Employee ID:", 19);
                             read(new_socket, id, sizeof(id));
@@ -394,7 +395,7 @@ void *handle_client(void *socket_desc) {
 
                             break;
                         }
-                        case 5: {
+                        case 3: {
                             int id;
                             write(new_socket, "Enter Customer ID:", 19);
                             read(new_socket, id, sizeof(id));
@@ -431,7 +432,7 @@ void *handle_client(void *socket_desc) {
                             }
                             break;
                         }
-                        case 6: {
+                        case 4: {
                             //change password
                             char password[50];
                             write(new_socket, "Enter New Password:", 19);
@@ -439,10 +440,11 @@ void *handle_client(void *socket_desc) {
                             password[strcspn(password, "\n")] = '\0';
                             if(change_admin_password(email, password)==1) {
                                 write(new_socket, "Password changed successfully\n", 31);
-                                break;
+
                             }
+                            break;
                         }
-                        case 7: {
+                        case 5: {
                             write(new_socket, "Logout\n", 7);
                             write(new_socket,menu,strlen(menu));
                             break;

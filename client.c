@@ -38,7 +38,7 @@ int main() {
     printf("%s", server_reply);
 
     while (1) {
-        printf("Client input\n");
+        // printf("Client input\n");
         fgets(message, BUFFER_SIZE, stdin);
         //message[strcspn(message, "\n")] = '\0';
 
