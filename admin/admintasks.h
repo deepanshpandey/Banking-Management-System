@@ -78,20 +78,6 @@ int modify_employee(int id, const char *name, const char *email, const char* pas
     }
         return 0;
 }
-int add_customer(int id, const char *name, const char *email, const char *phone, const char *password, double balance, int account_active) {
-    const char* file_path = "../db/customers.txt";
-    int fd = open(file_path, O_WRONLY | O_APPEND);  // Open file in append mode
-    if (fd == -1) {
-        perror("Failed to open file");
-        return 0;
-    }
-    //add new customer
-    Customer customer={id, name, email, phone, password, balance, account_active};
-    write(fd, &customer, sizeof(customer));
-
-    close(fd);
-    return 1;
-}
 int modify_customer(int id, const char *name, const char *email, const char *phone, const char *password, double balance, int account_active) {
     const char *file_path = "../db/customers.txt";
     int fd = open(file_path, O_WRONLY | O_APPEND);
@@ -110,5 +96,27 @@ int modify_customer(int id, const char *name, const char *email, const char *pho
         }
     }
         return 0;
+}
+int change_admin_password(const char* email, const char* password) {
+    //change admin password
+    const char* file_path = "../db/admins.txt";
+    int fd=open(file_path, O_RDWR);
+    if(fd==-1) {
+        perror("Failed to open file");
+        return 0;
+    }
+    Admin admin;
+    while(read(fd, &admin, sizeof(admin))>0) {
+        if(strcmp(email, admin.email)==0) {
+            //id already exists
+            lseek(fd, -sizeof(admin), SEEK_CUR);
+            strcpy(admin.password, password);
+            write(fd, &admin, sizeof(admin));
+            close(fd);
+            return 1;
+        }
+    }
+    close(fd);
+    return 0;
 }
 #endif // ADMINTASKS_H
