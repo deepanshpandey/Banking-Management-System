@@ -8,7 +8,7 @@
 #include "db.h"
 #include "admin/admintasks.h"
 
-#define PORT 8087
+#define PORT 8091
 #define BUFFER_SIZE 10240
 
 void *handle_client(void *socket_desc) {
@@ -38,10 +38,14 @@ void *handle_client(void *socket_desc) {
                 break;
             case 4: {
                 char email[50], password[50];
-                write(new_socket, "Enter Email: ", 13);
-                read(new_socket, email, 50);
-                write(new_socket, "Enter Password: ", 16);
-                read(new_socket, password, 50);
+                char* msg="Enter Email: ";
+                write(new_socket, msg, sizeof(msg));
+                read(new_socket, email, sizeof(email)-1);
+                email[strcspn(email, "\n")] = '\0';
+                msg="Enter Password: ";
+                write(new_socket, msg, sizeof(msg));
+                read(new_socket, password, sizeof(password)-1);
+                password[strcspn(password, "\n")] = '\0';
                 if (verify_admin(email, password) == 1) {
                     write(new_socket, "Admin Login Successful\n", 23);
                 } else {

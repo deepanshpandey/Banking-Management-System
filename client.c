@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define PORT 8087
+#define PORT 8091
 #define BUFFER_SIZE 10240
 
 int main() {
@@ -40,9 +40,8 @@ int main() {
     while (1) {
         printf("Client input\n");
         fgets(message, BUFFER_SIZE, stdin);
-        message[strcspn(message, "\n")] = '\0';
+        //message[strcspn(message, "\n")] = '\0';
 
-        bzero(server_reply, BUFFER_SIZE);
         if (write(sock, message, strlen(message)) < 0) {
             return 1;
         }
@@ -53,7 +52,7 @@ int main() {
             break;
         }
 
-        printf("Server reply: %s\n", server_reply);
+        printf("%s\n", server_reply);
     }
 
     close(sock);
