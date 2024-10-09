@@ -179,7 +179,10 @@ void *handle_client(void *socket_desc) {
                                 }else {
                                     write(new_socket, "Customer modification failed\n", 30);
                                 }
-
+                            } else {
+                                //id does not exist
+                                write(new_socket, "Customer does not exist\n", 25);
+                            }
                             break;
                         }
                         case 7: {
