@@ -8,6 +8,9 @@ add_executable(server server.c
         admin/admintasks.h
         employee/emptasks.h
         customer/customertasks.h
+        admin/adminoptions.h
+        customer/customeroptions.h
+        employee/empoptions.h
 )
 add_executable(client client.c)
 add_executable(adminCreator adminCreator.c

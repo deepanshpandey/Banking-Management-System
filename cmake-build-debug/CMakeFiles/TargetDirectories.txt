@@ -1,5 +1,0 @@
-/home/deepanshpandey/CLionProjects/Banking-Management-System/cmake-build-debug/CMakeFiles/server.dir
-/home/deepanshpandey/CLionProjects/Banking-Management-System/cmake-build-debug/CMakeFiles/client.dir
-/home/deepanshpandey/CLionProjects/Banking-Management-System/cmake-build-debug/CMakeFiles/adminCreator.dir
-/home/deepanshpandey/CLionProjects/Banking-Management-System/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/deepanshpandey/CLionProjects/Banking-Management-System/cmake-build-debug/CMakeFiles/rebuild_cache.dir

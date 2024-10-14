@@ -5,6 +5,9 @@
 #ifndef CUSTOMERTASKS_H
 #define CUSTOMERTASKS_H
 
+#include "../db.h"
+#include <fcntl.h>
+
 int verify_customer(const char* email, const char* password) {
     const char* file_path = "../db/customers.txt";
     Customer cust;

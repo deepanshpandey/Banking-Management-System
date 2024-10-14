@@ -4,10 +4,13 @@
 
 #ifndef EMPTASKS_H
 #define EMPTASKS_H
+
+#include "../db.h"
+#include <fcntl.h>
 int verify_employee(const char *email, const char *password) {
     const char* file_path = "../db/employees.txt";
     Employee emp;
-    int fd = open(file_path, O_RDONLY);
+    int fd = open(file_path, O_RDONLY,0777);
     if (fd == -1) {
         perror("Failed to open file");
         return;
@@ -24,7 +27,7 @@ int verify_employee(const char *email, const char *password) {
 int customer_lookup(int id) {
     //check if customer exists
     const char* file_path = "../db/customers.txt";
-    int fd=open(file_path, O_RDONLY);
+    int fd=open(file_path, O_RDONLY,0777);
     if(fd==-1) {
         perror("Failed to open file");
         return 0;
@@ -43,7 +46,7 @@ int customer_lookup(int id) {
 int change_customer_status(int id,int status) {
     //change customer status
     const char* file_path = "../db/customers.txt";
-    int fd=open(file_path, O_RDWR);
+    int fd=open(file_path, O_RDWR,0777);
     if(fd==-1) {
         perror("Failed to open file");
         return 0;
@@ -65,7 +68,7 @@ int change_customer_status(int id,int status) {
 int change_emp_password(const char* email, const char* password) {
     //change employee password
     const char* file_path = "../db/employees.txt";
-    int fd=open(file_path, O_RDWR);
+    int fd=open(file_path, O_RDWR,0777);
     if(fd==-1) {
         perror("Failed to open file");
         return 0;
@@ -86,7 +89,7 @@ int change_emp_password(const char* email, const char* password) {
 }
 int add_customer(int id, const char *name, const char *email, const char *phone, const char *password, double balance, int account_active) {
     const char* file_path = "../db/customers.txt";
-    int fd = open(file_path, O_WRONLY | O_APPEND);  // Open file in append mode
+    int fd = open(file_path, O_RDWR | O_CREAT | O_APPEND, 0666);  // Open file in append mode
     if (fd == -1) {
         perror("Failed to open file");
         return 0;

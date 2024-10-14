@@ -9,7 +9,7 @@
 int verify_admin(const char *email, const char *password) {
     const char* file_path = "../db/admins.txt";
     Admin admin;
-    int fd = open(file_path, O_RDONLY);
+    int fd = open(file_path, O_RDONLY,0777);
     if (fd == -1) {
         perror("Failed to open file");
         return;
@@ -25,7 +25,7 @@ int verify_admin(const char *email, const char *password) {
 }
 int lookup(int id) {
     const char* file_path = "../db/employees.txt";
-    int fd=open(file_path, O_RDONLY);
+    int fd=open(file_path, O_RDONLY,0777);
     if(fd==-1) {
         perror("Failed to open file");
         return 0;
@@ -43,7 +43,7 @@ int lookup(int id) {
 }
 int add_employee(int id, const char *name, const char *email, const char* password, int is_manager) {
     const char* file_path = "../db/employees.txt";
-    int fd = open(file_path, O_WRONLY | O_APPEND);  // Open file in append mode
+    int fd = open(file_path, O_RDWR | O_CREAT | O_APPEND, 0666);  // Open file in append mode
     if (fd == -1) {
         perror("Failed to open file");
         return 0;
@@ -61,7 +61,7 @@ int add_employee(int id, const char *name, const char *email, const char* passwo
 }
 int modify_employee(int id, const char *name, const char *email, const char* password, int is_manager) {
     const char *file_path = "../db/employees.txt";
-    int fd = open(file_path, O_WRONLY | O_APPEND);
+    int fd = open(file_path, O_CREAT| O_RDWR | O_APPEND, 0777);
     if (fd == -1) {
         perror("Failed to open file");
         return 0;
@@ -80,7 +80,7 @@ int modify_employee(int id, const char *name, const char *email, const char* pas
 }
 int modify_customer(int id, const char *name, const char *email, const char *phone, const char *password, double balance, int account_active) {
     const char *file_path = "../db/customers.txt";
-    int fd = open(file_path, O_WRONLY | O_APPEND);
+    int fd = open(file_path, O_RDWR | O_CREAT | O_APPEND, 0666);
     if (fd == -1) {
         perror("Failed to open file");
         return 0;
@@ -100,7 +100,7 @@ int modify_customer(int id, const char *name, const char *email, const char *pho
 int change_admin_password(const char* email, const char* password) {
     //change admin password
     const char* file_path = "../db/admins.txt";
-    int fd=open(file_path, O_RDWR);
+    int fd=open(file_path, O_RDWR,0777);
     if(fd==-1) {
         perror("Failed to open file");
         return 0;

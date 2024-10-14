@@ -47,6 +47,7 @@ int main() {
         }
 
         bzero(server_reply, BUFFER_SIZE);
+        memset(server_reply, 0, BUFFER_SIZE);
         if (read(sock, server_reply, BUFFER_SIZE) < 0) {
             perror("Recv failed");
             break;
