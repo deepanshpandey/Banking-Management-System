@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 
 #define PORT 8091
-#define BUFFER_SIZE 102400
+#define BUFFER_SIZE 10240
 
 int main() {
     int sock;
@@ -39,21 +39,23 @@ int main() {
 
     while (1) {
         // printf("Client input\n");
+        bzero(message, BUFFER_SIZE);
+        bzero(server_reply, BUFFER_SIZE);
+
         fgets(message, BUFFER_SIZE, stdin);
-        //message[strcspn(message, "\n")] = '\0';
+        message[strcspn(message, "\n")] = '\0';
 
         if (write(sock, message, strlen(message)) < 0) {
             return 1;
         }
 
-        bzero(server_reply, BUFFER_SIZE);
-        memset(server_reply, 0, BUFFER_SIZE);
+        // memset(server_reply, 0, BUFFER_SIZE);
         if (read(sock, server_reply, BUFFER_SIZE) < 0) {
             perror("Recv failed");
             break;
         }
 
-        printf("%s\n", server_reply);
+        printf("%s", server_reply);
     }
 
     close(sock);

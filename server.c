@@ -17,30 +17,29 @@ void *handle_client(void *socket_desc) {
     int new_socket = *(int *)socket_desc;
     char buffer[BUFFER_SIZE];
     bool logout = false;
-
-    const char *menu = "Select an option:\n"
+    while ( logout == false) {
+        menu_options:
+        const char *menu = "Select an option:\n"
                         "1. Customer Login\n"
                         "2. Employee Login\n"
                         "3. Manager Login\n"
                         "4. Admin Login\n"
                         "5. Exit\n";
-    write(new_socket, menu, strlen(menu));
-    bzero(buffer, BUFFER_SIZE);
-    int read_size = read(new_socket, buffer, BUFFER_SIZE);
-    if (read_size == 0) {
-        perror("receive failed");
-        printf("Try again\n");
-        bzero(buffer, BUFFER_SIZE);
         write(new_socket, menu, strlen(menu));
-    } else if (read_size == -1) {
-        perror("receive failed");
         bzero(buffer, BUFFER_SIZE);
-        write(new_socket, menu, strlen(menu));
-    }
-    const int option = atoi(buffer);
-
-    while ( logout == false) {
-
+        int read_size = read(new_socket, buffer, BUFFER_SIZE);
+        const int option = atoi(buffer);
+        if (read_size == 0) {
+            perror("receive failed");
+            printf("Try again\n");
+            bzero(buffer, BUFFER_SIZE);
+            goto menu_options;
+        }
+        if (read_size == -1) {
+            perror("receive failed");
+            bzero(buffer, BUFFER_SIZE);
+            goto menu_options;
+        }
         switch (option) {
 
             case 1:
@@ -59,26 +58,16 @@ void *handle_client(void *socket_desc) {
                 admin_menu(new_socket);
                 break;
 
-
             case 5:
                 write(new_socket, "Exit\n", 5);
                 logout = true;
-                close(new_socket);
-                free(socket_desc);
-                return NULL;
                 break;
-
 
             default:
                 write(new_socket, "Invalid option. Please select again\n", 37);
-                bzero(new_socket, BUFFER_SIZE);
-                write(new_socket, menu, strlen(menu));
-                bzero(new_socket, BUFFER_SIZE);
-                break;
-
+                bzero(buffer, BUFFER_SIZE);
+                goto menu_options;
         }
-        write(new_socket, menu, strlen(menu));
-        bzero(buffer, BUFFER_SIZE);
     }
 
     printf("Client disconnected\n");

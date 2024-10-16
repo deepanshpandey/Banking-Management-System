@@ -13,22 +13,26 @@
 void admin_menu(int new_socket) {
     char buffer[BUFFER_SIZE];
     bool logout = false;
-    const char *attempt = "enter credentials";
+    admin_retry:
         char email[50], password[50];
-        write(new_socket, "Enter Email:", 12);
+        bzero(buffer, BUFFER_SIZE);
+        write(new_socket, "\nEnter Email: ", 15);
         read(new_socket, email, sizeof(email)-1);
         email[strcspn(email, "\n")] = '\0';
-        write(new_socket, "Enter Password:", 15);
+        write(new_socket, "\nEnter Password: ", 18);
         read(new_socket, password, sizeof(password)-1);
         password[strcspn(password, "\n")] = '\0';
         if (verify_admin(email, password) == 1) {
-            write(new_socket, "Admin Login Successful\n", 23);
+
+            write(new_socket, "\nAdmin Login Successful\n", 23);
+            admin_options:
             const char *admin_menu = "Select an option:\n"
                 "1.Add new bank employee/manager\n"
                 "2.Modify bank employee/manager details\n"
                 "3.Modify bank customer details\n"
                 "4.Change password\n"
-                "5.Logout\n";
+                "5.Logout\n"
+                "Enter Your Choice: ";
 
             write(new_socket, admin_menu, strlen(admin_menu));
             bzero(buffer, BUFFER_SIZE);
@@ -154,8 +158,7 @@ void admin_menu(int new_socket) {
 
                     default: {
                         write(new_socket, "Invalid option. Please select again\n", 37);
-                        write(new_socket, admin_menu, strlen(admin_menu));
-                        break;
+                        goto admin_options;
                     }
 
                 }
@@ -163,8 +166,7 @@ void admin_menu(int new_socket) {
             while(logout == false);
         } else {
             write(new_socket, "Invalid Admin Credentials\n", 26);
-            bzero(new_socket, BUFFER_SIZE);
-            write(new_socket,attempt,strlen(attempt));
+            goto admin_retry;
         }
 }
 #endif //ADMINOPTIONS_H

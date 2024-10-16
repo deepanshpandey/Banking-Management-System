@@ -147,7 +147,7 @@ void emp_menu(int new_socket) {
     }while (logout == false);
 }
 
-inline void manager_menu(int new_socket) {
+void manager_menu(int new_socket) {
     char buffer[BUFFER_SIZE];
     bool logout = false;
     do {
