@@ -14,7 +14,7 @@ int verify_customer(const char* email, const char* password) {
     int fd = open(file_path, O_RDONLY);
     if (fd == -1) {
         perror("Failed to open file");
-        return;
+        return 0;
     }
 
     while (read(fd, &cust, sizeof(cust)) > 0) {

@@ -13,7 +13,7 @@ int verify_employee(const char *email, const char *password) {
     int fd = open(file_path, O_RDONLY,0777);
     if (fd == -1) {
         perror("Failed to open file");
-        return;
+        return 0;
     }
 
     while (read(fd, &emp, sizeof(emp)) > 0) {

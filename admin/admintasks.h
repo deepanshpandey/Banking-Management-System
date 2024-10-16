@@ -12,7 +12,7 @@ int verify_admin(const char *email, const char *password) {
     int fd = open(file_path, O_RDONLY,0777);
     if (fd == -1) {
         perror("Failed to open file");
-        return;
+        return 0;
     }
 
     while (read(fd, &admin, sizeof(admin)) > 0) {

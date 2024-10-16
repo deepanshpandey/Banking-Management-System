@@ -16,7 +16,7 @@
 void *handle_client(void *socket_desc) {
     int new_socket = *(int *)socket_desc;
     char buffer[BUFFER_SIZE];
-    int read_size;
+    bool logout = false;
 
     const char *menu = "Select an option:\n"
                         "1. Customer Login\n"
@@ -26,9 +26,20 @@ void *handle_client(void *socket_desc) {
                         "5. Exit\n";
     write(new_socket, menu, strlen(menu));
     bzero(buffer, BUFFER_SIZE);
+    int read_size = read(new_socket, buffer, BUFFER_SIZE);
+    if (read_size == 0) {
+        perror("receive failed");
+        printf("Try again\n");
+        bzero(buffer, BUFFER_SIZE);
+        write(new_socket, menu, strlen(menu));
+    } else if (read_size == -1) {
+        perror("receive failed");
+        bzero(buffer, BUFFER_SIZE);
+        write(new_socket, menu, strlen(menu));
+    }
+    const int option = atoi(buffer);
 
-    while ((read_size = read(new_socket, buffer, BUFFER_SIZE)) > 0) {
-        int option = atoi(buffer);
+    while ( logout == false) {
 
         switch (option) {
 
@@ -51,8 +62,10 @@ void *handle_client(void *socket_desc) {
 
             case 5:
                 write(new_socket, "Exit\n", 5);
+                logout = true;
                 close(new_socket);
                 free(socket_desc);
+                return NULL;
                 break;
 
 
@@ -68,12 +81,7 @@ void *handle_client(void *socket_desc) {
         bzero(buffer, BUFFER_SIZE);
     }
 
-    if (read_size == 0) {
-        printf("Client disconnected\n");
-    } else if (read_size == -1) {
-        perror("receive failed");
-    }
-
+    printf("Client disconnected\n");
     close(new_socket);
     free(socket_desc);
     return NULL;

@@ -1,7 +1,0 @@
-char email[50], password[50];
-write(new_socket, "Enter Email:", 12);
-read(new_socket, email, sizeof(email)-1);
-email[strcspn(email, "\n")] = '\0';
-write(new_socket, "Enter Password:", 15);
-read(new_socket, password, sizeof(password)-1);
-password[strcspn(password, "\n")] = '\0';
