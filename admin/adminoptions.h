@@ -12,8 +12,7 @@
 
 void admin_menu(int new_socket) {
     char buffer[BUFFER_SIZE];
-    bool logout = false;
-    admin_retry:
+admin_retry:
         char email[50], password[50];
         bzero(buffer, BUFFER_SIZE);
         write(new_socket, "\nEnter Email: ", 15);
@@ -23,6 +22,7 @@ void admin_menu(int new_socket) {
         read(new_socket, password, sizeof(password)-1);
         password[strcspn(password, "\n")] = '\0';
         if (verify_admin(email, password) == 1) {
+            bool logout = false;
 
             write(new_socket, "\nAdmin Login Successful\n", 23);
             admin_options:
@@ -160,7 +160,6 @@ void admin_menu(int new_socket) {
                         write(new_socket, "Invalid option. Please select again\n", 37);
                         goto admin_options;
                     }
-
                 }
             }
             while(logout == false);

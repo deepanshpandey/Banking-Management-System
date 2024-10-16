@@ -11,7 +11,12 @@ add_executable(server server.c
         admin/adminoptions.h
         customer/customeroptions.h
         employee/empoptions.h
+        transactions/transoptions.h
+        transactions/transtasks.h
+        loans/loanoptions.h
+        loans/loantasks.h
 )
 add_executable(client client.c)
-add_executable(adminCreator adminCreator.c)
+add_executable(adminCreator adminCreator.c
+)
 add_executable(ocr ocr.c)
