@@ -6,3 +6,5 @@ cmake-build-debug/
 cmake-build-release/
 *.out
 *.iml
+client
+server
