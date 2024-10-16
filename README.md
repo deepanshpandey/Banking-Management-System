@@ -19,9 +19,11 @@ This project is a part of the C programming course at the Faculty of Software Sy
 ## How to run
 this project has been tested on Ubuntu 20.04 to 24.10 and should work on any Linux distribution.
 run the following commands in the terminal
-``` gcc server.c -o server && ./server ```
+``` gcc server.c -o server && ./server 
+```
 now in an other terminal run the following commands
-``` gcc client.c -o client && ./client ```
+``` gcc client.c -o client && ./client 
+```
 ### Note
 - If you are using a different operating system, you may need to change the code a little bit to make it work.
 - If you found any bugs or issues, please report them.
