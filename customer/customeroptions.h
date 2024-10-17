@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include "customertasks.h"
+#include "../loans/loanoptions.h"
 #define BUFFER_SIZE 10240
 
 void customer_menu(int new_socket) {
@@ -29,7 +30,7 @@ void customer_menu(int new_socket) {
                                         "2. Deposit Money\n"
                                         "3. Withdraw Money\n"
                                         "4. Transfer Funds\n"
-                                        "5. Apply For a Loan\n"
+                                        "5. Loans\n"
                                         "6. Change Password\n"
                                         "7. Add FeedBack\n"
                                         "8. View Transaction History\n"
@@ -84,21 +85,7 @@ void customer_menu(int new_socket) {
                     break;
                 }
                 case 5: {
-                    //apply for a loan
-                    double loan_amt;
-                    int dur_year, dur_month;
-                    write(new_socket, "Enter Loan Amount: ", 20);
-                    read(new_socket, buffer, sizeof(buffer)-1);
-                    loan_amt = atof(buffer);
-                    write(new_socket, "Enter Loan Duration (years): ", 30);
-                    read(new_socket, buffer, sizeof(buffer)-1);
-                    dur_year = atoi(buffer);
-                    write(new_socket, "Enter Loan Duration (months): ", 32);
-                    read(new_socket, buffer, sizeof(buffer)-1);
-                    dur_month = atoi(buffer);
-                    if(apply_for_loan(email, loan_amt, dur_year, dur_month)==1) {
-                        write(new_socket, "Loan applied successfully\n", 27);
-                    }
+                    loan_menu(new_socket,email);
                     break;
                 }
                 case 6: {
@@ -116,15 +103,31 @@ void customer_menu(int new_socket) {
                 }
                 case 7: {
                     //add feedback
+                    char feedback[1000];
+                    write(new_socket, "Enter Feedback: ", 17);
+                    read(new_socket, feedback, sizeof(feedback)-1);
+                    feedback[strcspn(feedback, "\n")] = '\0';
+                    if(add_feedback(email, feedback)==1) {
+                        write(new_socket, "Feedback added successfully\n", 29);
+                    }
+                    else {
+                        write(new_socket, "Feedback addition failed\n", 26);
+                    }
                     break;
                 }
                 case 8: {
                     //view transaction history
+                    view_transactions(email,new_socket);
                     break;
                 }
                 case 9: {
                     //logout
-                    write(new_socket, "Logout\n", 7);
+                    if(logoutcustomer(email)==1) {
+                        write(new_socket, "Logout Successful\n", 18);
+                    }
+                    else {
+                        write(new_socket, "Logout Failed\n", 14);
+                    }
                     logout = true;
                     break;
                 }

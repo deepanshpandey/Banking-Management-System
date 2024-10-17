@@ -7,6 +7,7 @@
 
 #include <stdbool.h>
 #include "emptasks.h"
+#include "../customer/customertasks.h"
 #define BUFFER_SIZE 10240
 
 void emp_menu(int new_socket) {
@@ -42,18 +43,16 @@ void emp_menu(int new_socket) {
                         double balance;
                         char amount[20];
                         int account_active=1;
-                        write(new_socket, "Enter Customer ID:", 19);
-                        read(new_socket, id, sizeof(id));
-                        if(lookup(id)==1) {
+                        write(new_socket, "Enter Customer Email:", 22);
+                        read(new_socket, email, sizeof(email)-1);
+                        email[strcspn(email, "\n")] = '\0';
+                        if(lookup(getcustomerid(email))==1) {
                             //already exists
                             write(new_socket, "Customer already exists\n", 26);
                         }else {
                             write(new_socket, "Enter Customer Name:", 21);
                             read(new_socket, name, sizeof(name)-1);
                             name[strcspn(name, "\n")] = '\0';
-                            write(new_socket, "Enter Customer Email:", 22);
-                            read(new_socket, email, sizeof(email)-1);
-                            email[strcspn(email, "\n")] = '\0';
                             write(new_socket, "Enter Customer Phone:", 22);
                             read(new_socket, phone, sizeof(phone)-1);
                             phone[strcspn(phone, "\n")] = '\0';
@@ -64,8 +63,11 @@ void emp_menu(int new_socket) {
                             read(new_socket, amount, sizeof(amount)-1);
                             amount[strcspn(amount, "\n")] = '\0';
                             balance=strtod(amount,NULL);
-                            if(add_customer(id, name, email, phone, password, balance, account_active)==1) {
-                                write(new_socket, "Customer added successfully\n", 29);
+                            int id = add_customer(name, email, phone, password, balance, account_active);
+                            if(id) {
+                                bzero(buffer, BUFFER_SIZE);
+                                sprintf(buffer, "Customer added successfully with ID %d\n", id);
+                                write(new_socket,buffer, sizeof(buffer));
                             }else {
                                 write(new_socket, "Customer addition failed\n", 27);
                             }
@@ -74,20 +76,20 @@ void emp_menu(int new_socket) {
                     }
                     case 2: {
                         int id;
-                        write(new_socket, "Enter Customer ID:", 19);
+                        char  email[50];
+                        write(new_socket, "Enter Customer Email:", 22);
+                        read(new_socket, email, sizeof(email)-1);
+                        email[strcspn(email, "\n")] = '\0';
                         read(new_socket, id, sizeof(id));
-                        if(customer_lookup(id)==1) {
+                        if(customer_lookup(email)==1) {
                             //already exists
-                            char name[50], email[50], phone[15], password[50];
+                            char name[50], phone[15], password[50];
                             double balance;
                             char amount[20];
                             int account_active=1;
                             write(new_socket, "Enter Customer Name:", 21);
                             read(new_socket, name, sizeof(name)-1);
                             name[strcspn(name, "\n")] = '\0';
-                            write(new_socket, "Enter Customer Email:", 22);
-                            read(new_socket, email, sizeof(email)-1);
-                            email[strcspn(email, "\n")] = '\0';
                             write(new_socket, "Enter Customer Phone:", 22);
                             read(new_socket, phone, sizeof(phone)-1);
                             phone[strcspn(phone, "\n")] = '\0';
@@ -98,7 +100,7 @@ void emp_menu(int new_socket) {
                             read(new_socket, amount, sizeof(amount)-1);
                             amount[strcspn(amount, "\n")] = '\0';
                             balance=strtod(amount,NULL);
-                            if(modify_customer(id, name, email, phone, password, balance, account_active)==1) {
+                            if(modify_customer(name, email, phone, password, balance, account_active)==1) {
                                 write(new_socket, "Customer modified successfully\n", 32);
                             }else {
                                 write(new_socket, "Customer modification failed\n", 30);
@@ -109,9 +111,11 @@ void emp_menu(int new_socket) {
                         break;
                     }
                     case 3: {
+                        view_assigned_loans(email,new_socket);
                         break;
                     }
                     case 4: {
+
                         break;
                     }
                     case 5: {
@@ -132,7 +136,12 @@ void emp_menu(int new_socket) {
                     }
                     case 7: {
                         //logout
-                        write(new_socket, "Logout\n", 7);
+                        if(logoutemployee(email)==1) {
+                            write(new_socket, "Logout Successful\n", 18);
+                        }
+                        else {
+                             write(new_socket, "Logout Failed\n", 15);
+                            }
                         logout = true;
                         break;
                     }
@@ -160,7 +169,7 @@ void manager_menu(int new_socket) {
             write(new_socket, "Enter Password:", 15);
             read(new_socket, password, sizeof(password)-1);
             password[strcspn(password, "\n")] = '\0';
-            if (verify_employee(email, password) == 1) {
+            if (verify_manager(email, password) == 1) {
                 man_menu:
                 write(new_socket, "Manager Login Successful\n", 27);
                 const char *employee_menu = "Select an option:\n"
@@ -175,15 +184,18 @@ void manager_menu(int new_socket) {
                     case 1: {
                         //change customer status
                         int id;
-                        write(new_socket, "Enter Customer ID:", 19);
-                        read(new_socket, id, sizeof(id));
-                        if(customer_lookup(id)==1) {
+                        char email[50];
+                        write(new_socket, "Enter Customer Email:", 19);
+                        read(new_socket, email, sizeof(email)-1);
+                        buffer[strcspn(email, "\n")] = '\0';
+                        if(customer_lookup(email)==1) {
                             //already exists
-                            char status[20];
+                            int status = 0;
+                            bzero(buffer, BUFFER_SIZE);
                             write(new_socket, "Enter Customer Status (1 for activation, 0 for deactivation):", 23);
-                            read(new_socket, status, sizeof(status)-1);
-                            status[strcspn(status, "\n")] = '\0';
-                            if(change_customer_status(id, status)==1) {
+                            read(new_socket, buffer, sizeof(buffer));
+                            status = atoi(buffer);
+                            if(change_customer_status(email, status)==1) {
                                 write(new_socket, "Customer status changed successfully\n", 38);
                             }else {
                                 write(new_socket, "Customer status change failed\n", 32);
@@ -196,6 +208,10 @@ void manager_menu(int new_socket) {
                     }
                     case 2: {
                         //assign loan application to an employee
+                        write(new_socket, "Enter Employee Email:", 21);
+                        read(new_socket, email, sizeof(email)-1);
+                        email[strcspn(email, "\n")] = '\0';
+                        assign_loan_to_employee(email,new_socket);
                         break;
                     }
                     case 3: {
@@ -216,7 +232,12 @@ void manager_menu(int new_socket) {
                         break;
                     }
                     case 5: {
-                        write(new_socket, "Logout\n", 7);
+                        if(logoutemployee(email)==1) {
+                            write(new_socket, "Logout Successful\n", 18);
+                        }
+                        else {
+                            write(new_socket, "Logout Failed\n", 15);
+                        }
                         logout = true;
                         break;
                     }

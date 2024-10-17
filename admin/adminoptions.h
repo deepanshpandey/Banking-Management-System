@@ -60,7 +60,7 @@ admin_retry:
                         bzero(buffer, BUFFER_SIZE);
                         read(new_socket, buffer, sizeof(buffer));
                         int is_manager = atoi(buffer);
-                        if(add_employee(id, name, email, password,is_manager)==1) {
+                        if(add_employee(name, email, password,is_manager)==1) {
                             write(new_socket, "Employee added successfully\n", 29);
                         }else {
                             write(new_socket, "Employee already exists\n", 26);
@@ -73,7 +73,7 @@ admin_retry:
                         write(new_socket, "Enter Employee ID:", 19);
                         read(new_socket, id, sizeof(id));
 
-                        if(lookup(id)==1) {
+                        if(lookup(id)) {
                             //already exists
                             char name[50], email[50], password[50];
                             int is_manager;
@@ -88,7 +88,7 @@ admin_retry:
                             password[strcspn(password, "\n")] = '\0';
                             write(new_socket, "Enter Employee Type(1 for manager, 0 for employee):", 52);
                             read(new_socket, is_manager, sizeof(is_manager));
-                            if(modify_employee(id, name, email, password,is_manager)==1) {
+                            if(modify_employee(name, email, password,is_manager)==1) {
                                 write(new_socket, "Employee modified successfully\n", 32);
                             }else {
                                 write(new_socket, "Employee modification failed\n", 30);
@@ -101,10 +101,10 @@ admin_retry:
                     }
 
                     case 3: {
-                        int id;
                         write(new_socket, "Enter Customer ID:", 19);
-                        read(new_socket, id, sizeof(id));
-                        if(customer_lookup(id)==1) {
+                        bzero(buffer, BUFFER_SIZE);
+                        read(new_socket, buffer, sizeof(buffer));
+                        if(customer_lookup(buffer)==1) {
                             //already exists
                             char name[50], email[50], phone[15], password[50];
                             double balance;
@@ -126,7 +126,7 @@ admin_retry:
                             read(new_socket, amount, sizeof(amount)-1);
                             amount[strcspn(amount, "\n")] = '\0';
                             balance=strtod(amount,NULL);
-                            if(modify_customer(id, name, email, phone, password, balance, account_active)==1) {
+                            if(modify_customer(name, email, phone, password, balance, account_active)==1) {
                                 write(new_socket, "Customer modified successfully\n", 32);
                             }else {
                                 write(new_socket, "Customer modification failed\n", 30);
@@ -151,7 +151,11 @@ admin_retry:
                     }
 
                     case 5: {
-                        write(new_socket, "Logout\n", 7);
+                        if (logoutadmin(email) == 1) {
+                            write(new_socket, "Logout Successful\n", 19);
+                        } else {
+                            write(new_socket, "Logout Failed\n", 15);
+                        }
                         logout = true;
                         break;
                     }

@@ -10,6 +10,21 @@
 
 // Define a struct for Customer
 typedef struct {
+    int day;
+    int month;
+    int year;
+    int hour;
+    int minute;
+    int second;
+} DateTime;
+
+
+typedef struct {
+    int months;
+    int years;
+} MonthYear;;
+
+typedef struct {
     int id;
     char name[50];
     char email[50];
@@ -42,21 +57,23 @@ typedef struct {
 typedef struct {
     int transaction_id;
     int account_id;
+    int to_account_id;
     double amount;
-    char type[15]; // "deposit", "withdrawal", "transfer", "failed"
-    char date[20];
+    char type[20]; // "deposit", "withdrawal", "transfer", "failed", "loan"
+    DateTime date;
 } Transaction;
 
 // Define a struct for LoanApplication
 typedef struct {
     int loan_id;
     int customer_id;
+    char email[50]; // customer email
     double amount;
     float interest_rate;
-    int dur_year; // in years only
-    int dur_month;// in months only
+    MonthYear month_year; // in years & months only
     double remaining_amount;
-    char approved_date[20];
+    DateTime application_date;
+    DateTime approved_date;
     char status[20]; // "pending", "approved", "rejected"
     int assigned_employee_id;
 } LoanApplication;
@@ -64,9 +81,9 @@ typedef struct {
 // Define a struct for Feedback
 typedef struct {
     int feedback_id;
-    int customer_id;
-    char feedback[255];
-    char date[20];
+    char mail[50];
+    char feedback[1000];
+    DateTime date_time;
 } Feedback;
 // Define a struct for other data
 typedef struct {

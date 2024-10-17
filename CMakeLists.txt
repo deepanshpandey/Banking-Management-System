@@ -4,7 +4,7 @@ project(untitled C)
 set(CMAKE_C_STANDARD 11)
 add_compile_options(-Wno-int-conversion)
 add_executable(server server.c
-        db.h
+        db/db.h
         admin/admintasks.h
         employee/emptasks.h
         customer/customertasks.h
@@ -15,6 +15,8 @@ add_executable(server server.c
         transactions/transtasks.h
         loans/loanoptions.h
         loans/loantasks.h
+        db/datetimetasks.h
+        db/ottasks.h
 )
 add_executable(client client.c)
 add_executable(adminCreator adminCreator.c

@@ -7,10 +7,10 @@
 
 void add_admin() {
     Admin admin;
-    const int fd = open("db/admins.txt", O_WRONLY | O_CREAT | O_APPEND, 0666);
+    const int fd = open("db/admins.db", O_WRONLY | O_CREAT | O_APPEND, 0666);
 
     if (fd == -1) {
-        perror("Failed to open file db/admins.txt");
+        perror("Failed to open file db/admins.db");
         return;
     }
 
