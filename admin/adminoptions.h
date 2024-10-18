@@ -23,8 +23,8 @@ void admin_menu(int new_socket) {
         password[strcspn(password, "\n")] = '\0';
         if (verify_admin(email, password) == 1) {
             bool logout = false;
-
             write(new_socket, "\nAdmin Login Successful\n", 25);
+            admin_options:
             const char *admin_menu = "Select an option:\n"
                 "1.Add new bank employee/manager\n"
                 "2.Modify bank employee/manager details\n"
