@@ -16,17 +16,16 @@ This project is a part of the C programming course at the Faculty of Software Sy
 - Easy to use
 - No external libraries
 - Loan system
-- Interest calculation
+- Multi-user support (via multi-threading)
 - User Session Limits
 - Account locking/Unlocking
 - etc.
 ## To-Do
 - Improve the code
 - Add Record Locking
-- Add support for multiple Clients
 ## How to run
 this project has been tested on Ubuntu 20.04 to 24.10 and should work on any Linux distribution.
-run the following commands in a terminal
+run the following commands in a terminal in the project directory.
 ```
 gcc server.c -o server && ./server
 ```
@@ -34,10 +33,20 @@ now in another terminal run the following commands
 ```
 gcc client.c -o client && ./client 
 ```
+Client supports multithreading and can be run multiple times to simulate multiple users.
 ### Note
-- If you are using a different operating system, you may need to change the code a little bit to make it work.
+- If you are using a Operating System other than Ubuntu or Linux (say Windows or MacOS) , you may need to change the code a little bit to make it work.
 - If you found any bugs or issues, please report them.
-- An optional OCR (One Click Run) script has been added. This will compile and run the server and client files automatically. You can compile and run the script by running the following command
+- An optional OCR (One Click Run) script has been added. This will compile and run the server and client files automatically, but you will need to run client again if you wish to have multiple clients. You can compile and run the script by running the following command
 ```
 gcc ocr.c -o ocr && ./ocr
 ```
+- The default username and password are `admin` and `admin` respectively.
+- to terminate a client instance type `exit` and press enter.
+- to create a new admin account or clear the databases, you can use the adminCreator.c Program.
+- To Run the adminCreator.c Program, use the following commands
+```
+gcc adminCreator.c -o ac && ./ac
+```
+- This program is made using JetBrains CLion and uses Cmake.
+- 

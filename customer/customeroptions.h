@@ -23,8 +23,8 @@ void customer_menu(int new_socket) {
         read(new_socket, password, sizeof(password)-1);
         password[strcspn(password, "\n")] = '\0';
         if(verify_customer(email, password)==1) {
-            cust_menu:
             write(new_socket, "Customer Login Successful\n", 27);
+            cust_menu:
             const char *customer_menu = "Select an option:\n"
                                         "1. View Account Balance\n"
                                         "2. Deposit Money\n"
@@ -37,6 +37,8 @@ void customer_menu(int new_socket) {
                                         "9. Logout\n"
                                         "Enter Your Choice: ";
             write(new_socket, customer_menu, strlen(customer_menu));
+            bzero(buffer, BUFFER_SIZE);
+            read(new_socket, buffer, sizeof(buffer));
             int customer_option=atoi(buffer);
             switch (customer_option) {
                 case 1: {
@@ -135,6 +137,14 @@ void customer_menu(int new_socket) {
                     write(new_socket, "Invalid option. Please select again\n", 37);
                     goto cust_menu;
                 }
+            }
+        }
+        else {
+            write(new_socket, "Login Failed. Try Again?\n(Type 0 for yes or 1 for no) :", 54);
+            bzero(buffer, BUFFER_SIZE);
+            read(new_socket, buffer, sizeof(buffer));
+            if(atoi(buffer)==1) {
+                logout = true;
             }
         }
     }while (logout == false);

@@ -4,9 +4,10 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <signal.h>
 
 #include "admin/adminoptions.h"
-#include "admin/admintasks.h"
 #include "employee/empoptions.h"
 #include "customer/customeroptions.h"
 
@@ -24,7 +25,8 @@ void *handle_client(void *socket_desc) {
                         "2. Employee Login\n"
                         "3. Manager Login\n"
                         "4. Admin Login\n"
-                        "5. Exit\n";
+                        "5. Exit\n"
+                        "Enter your choice: ";
         write(new_socket, menu, strlen(menu));
         bzero(buffer, BUFFER_SIZE);
         int read_size = read(new_socket, buffer, BUFFER_SIZE);
@@ -80,6 +82,7 @@ int main() {
     int server_fd, new_socket, *new_sock;
     struct sockaddr_in server, client;
     socklen_t client_len = sizeof(client);
+    signal(SIGPIPE, SIG_IGN);
 
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd == -1) {

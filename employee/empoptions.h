@@ -15,10 +15,11 @@ void emp_menu(int new_socket) {
     bool logout = false;
     do {
         emp_attempt:
-            char password[50], email[50];
+            char password[50], email[50], empemail[50];
             write(new_socket, "Enter Email:", 12);
             read(new_socket, email, sizeof(email)-1);
             email[strcspn(email, "\n")] = '\0';
+            strcpy(empemail,email);
             write(new_socket, "Enter Password:", 15);
             read(new_socket, password, sizeof(password)-1);
             password[strcspn(password, "\n")] = '\0';
@@ -34,11 +35,12 @@ void emp_menu(int new_socket) {
                                             "6. Change Password\n"
                                             "7. Logout\n";
                 write(new_socket, employee_menu, strlen(employee_menu));
+                bzero(buffer, BUFFER_SIZE);
+                read(new_socket, buffer, sizeof(buffer));
                 int employee_option=atoi(buffer);
                 switch (employee_option) {
                     case 1: {
                         //add new customer
-                        int id;
                         char name[50], email[50], phone[15], password[50];
                         double balance;
                         char amount[20];
@@ -75,12 +77,11 @@ void emp_menu(int new_socket) {
                         break;
                     }
                     case 2: {
-                        int id;
+                        //modify customer details
                         char  email[50];
                         write(new_socket, "Enter Customer Email:", 22);
                         read(new_socket, email, sizeof(email)-1);
                         email[strcspn(email, "\n")] = '\0';
-                        read(new_socket, id, sizeof(id));
                         if(customer_lookup(email)==1) {
                             //already exists
                             char name[50], phone[15], password[50];
@@ -111,14 +112,22 @@ void emp_menu(int new_socket) {
                         break;
                     }
                     case 3: {
+                        //view assigned loan applications
                         view_assigned_loans(email,new_socket);
                         break;
                     }
                     case 4: {
-
+                        //view customer transactions
+                        char cemail[50];
+                        write(new_socket, "Enter Customer Email:", 22);
+                        read(new_socket, cemail, sizeof(cemail)-1);
+                        cemail[strcspn(cemail, "\n")] = '\0';
+                        view_transactions(getcustomerid(cemail),new_socket);
                         break;
                     }
                     case 5: {
+                        //view assigned loan applications
+                        view_assigned_loans(empemail,new_socket);
                         break;
                     }
                     case 6: {
@@ -127,7 +136,7 @@ void emp_menu(int new_socket) {
                         write(new_socket, "Enter New Password:", 19);
                         read(new_socket, password, sizeof(password)-1);
                         password[strcspn(password, "\n")] = '\0';
-                        if(change_emp_password(email, password)==1) {
+                        if(change_emp_password(empemail, password)==1) {
                             write(new_socket, "Password changed successfully\n", 31);
                         }else {
                             write(new_socket, "Password change failed\n", 25);
@@ -136,13 +145,13 @@ void emp_menu(int new_socket) {
                     }
                     case 7: {
                         //logout
-                        if(logoutemployee(email)==1) {
+                        if(logoutemployee(empemail)==1) {
                             write(new_socket, "Logout Successful\n", 18);
+                            logout = true;
                         }
                         else {
                              write(new_socket, "Logout Failed\n", 15);
-                            }
-                        logout = true;
+                        }
                         break;
                     }
                     default: {
@@ -150,9 +159,14 @@ void emp_menu(int new_socket) {
                         goto emp_menu;
                     }
                 }
-            }else {
-                write(new_socket, "Invalid Employee Credentials\n", 30);
-                goto emp_attempt;
+            }
+            else {
+                write(new_socket, "Login Failed. Try Again?\n(Type 0 for yes or 1 for no) :", 54);
+                bzero(buffer, BUFFER_SIZE);
+                read(new_socket, buffer, sizeof(buffer));
+                if(atoi(buffer)==1) {
+                    logout = true;
+                }
             }
     }while (logout == false);
 }
@@ -170,8 +184,8 @@ void manager_menu(int new_socket) {
             read(new_socket, password, sizeof(password)-1);
             password[strcspn(password, "\n")] = '\0';
             if (verify_manager(email, password) == 1) {
-                man_menu:
                 write(new_socket, "Manager Login Successful\n", 27);
+                man_menu:
                 const char *employee_menu = "Select an option:\n"
                                             "1. Change Customer Status\n"
                                             "2. Assign Loan Application to an Employee\n"
@@ -179,6 +193,8 @@ void manager_menu(int new_socket) {
                                             "4. Change Password\n"
                                             "5. Logout\n";
                 write(new_socket, employee_menu, strlen(employee_menu));
+                bzero(buffer, BUFFER_SIZE);
+                read(new_socket, buffer, sizeof(buffer));
                 int employee_option=atoi(buffer);
                 switch(employee_option) {
                     case 1: {
@@ -234,22 +250,26 @@ void manager_menu(int new_socket) {
                     case 5: {
                         if(logoutemployee(email)==1) {
                             write(new_socket, "Logout Successful\n", 18);
+                            logout = true;
                         }
                         else {
                             write(new_socket, "Logout Failed\n", 15);
                         }
-                        logout = true;
                         break;
                     }
                     default: {
                         write(new_socket, "Invalid option. Please select again\n", 37);
                         goto man_menu;
-                        break;
                     }
                 }
-            }else {
-                write(new_socket, "Invalid Employee Credentials\n", 30);
-                goto man_attempt;
+            }
+            else {
+                write(new_socket, "Login Failed. Try Again?\n(Type 0 for yes or 1 for no) :", 54);
+                bzero(buffer, BUFFER_SIZE);
+                read(new_socket, buffer, sizeof(buffer));
+                if(atoi(buffer)==1) {
+                    logout = true;
+                }
             }
     }while (logout == false);
 }

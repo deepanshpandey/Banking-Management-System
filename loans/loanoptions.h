@@ -68,7 +68,7 @@ void emploanmenu(int new_socket, const char* email) {
         case 2:
                //approve/reject/modify application
                view_assigned_loans(new_socket, email);
-               modify_loan(new_socket, email);
+               modify_loan(new_socket);
                break;
         case 3:
                break;

@@ -42,6 +42,7 @@ typedef struct {
     char email[50];
     char password[50];
     int is_manager;
+    int account_active; //0 not an employee and 1 still an employee
     int login_status;
 } Employee;
 

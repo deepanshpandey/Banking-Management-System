@@ -7,7 +7,7 @@
 
 #include "../db/db.h"
 #include "../loans/loantasks.h"
-#include "../db/ottasks.h"
+#include "../datetime_ot/ottasks.h"
 #include "../transactions/transtasks.h"
 #include <fcntl.h>
 #include <string.h>
@@ -26,6 +26,7 @@ int getcustomerid(const char *email) {
             return cust.id;
         }
     }
+    close(fd);
     return 0;
 }
 int verify_customer(const char* email, const char* password) {

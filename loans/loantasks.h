@@ -9,31 +9,31 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "../db/db.h"
-#include "../db/ottasks.h""
-#include "../employee/emptasks.h"
+#include "../datetime_ot/ottasks.h"
+#include "../datetime_ot/datetimetasks.h"
 #include "../transactions/transtasks.h"
 
 #define BUFFER_SIZE 10240
 
-// int getemployeeid(const char *email) {
-//     //get employee id
-//     const char* file_path = "../db/employees.db";
-//     int fd=open(file_path, O_RDONLY,0777);
-//     if(fd==-1) {
-//         perror("Failed to open file");
-//         return 0;
-//     }
-//     Employee emp;
-//     while(read(fd, &emp, sizeof(emp))>0) {
-//         if(strcmp(email, emp.email)==0) {
-//             //id already exists
-//             close(fd);
-//             return emp.id;
-//         }
-//     }
-//     close(fd);
-//     return 0;
-// }
+int getemployeeid2(const char *email) {
+    //get employee id
+    const char* file_path = "../db/employees.db";
+    int fd=open(file_path, O_RDONLY,0777);
+    if(fd==-1) {
+        perror("Failed to open file");
+        return 0;
+    }
+    Employee emp;
+    while(read(fd, &emp, sizeof(emp))>0) {
+        if(strcmp(email, emp.email)==0) {
+            //id already exists
+            close(fd);
+            return emp.id;
+        }
+    }
+    close(fd);
+    return 0;
+}
 void view_applied_loans(const char* email, int new_socket){
     const char* file_path = "../db/customers.db";
     int fd=open(file_path, O_RDWR);
@@ -132,7 +132,7 @@ int assign_loan_to_employee(const char* email,int loan_id) { //pass loan id and 
         if(loan.loan_id==loan_id) {
             //id already exists
             lseek(fd, -sizeof(loan), SEEK_CUR);
-            loan.assigned_employee_id=getemployeeid(email);
+            loan.assigned_employee_id=getemployeeid2(email);
             write(fd, &loan, sizeof(loan));
             close(fd);
             return 1;
@@ -140,7 +140,7 @@ int assign_loan_to_employee(const char* email,int loan_id) { //pass loan id and 
     }
 }
 int view_assigned_loans(const char* email, int new_socket) {
-    int eid=getemployeeid(email);
+    int eid=getemployeeid2(email);
     const char* file_path = "../db/loans.db";
     int fd=open(file_path, O_RDWR);
     if(fd==-1) {
@@ -170,7 +170,7 @@ int view_assigned_loans(const char* email, int new_socket) {
     close(fd);
     return 0;
 }
-int modify_loan(int new_socket, const char* email) {
+int modify_loan(int new_socket) {
     char buffer[BUFFER_SIZE];
     write(new_socket, "Enter Loan ID to Modify: ", 26);
     read(new_socket, buffer, sizeof(buffer)-1);
@@ -181,7 +181,7 @@ int modify_loan(int new_socket, const char* email) {
         perror("Failed to open file");
         return 0;
     }
-    LoanApplication loan;//below will show assigned applications
+    LoanApplication loan;//below will find the loan application matching loan id
     while(read(fd, &loan, sizeof(loan))>0) {
         if(loan.loan_id==loan_id) {
             //id already exists

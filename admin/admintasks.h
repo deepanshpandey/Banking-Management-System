@@ -7,7 +7,7 @@
 
 #include "../customer/customertasks.h"
 #include "../employee/emptasks.h"
-#include "../db/ottasks.h"
+#include "../datetime_ot/ottasks.h"
 #include "../db/db.h"
 
 int verify_admin(const char *email, const char *password) {
@@ -77,12 +77,11 @@ int add_employee(const char *name, const char *email, const char* password, int 
     if(lookup(email)==1) {
         //already exists
         return 0;
-    }else {
-        //add new employee
-        int id=generateemployeeid();
-        Employee employee={id, name, email, password, is_manager};
-        write(fd, &employee, sizeof(employee));
     }
+    //add new employee
+    int id=generateemployeeid();
+    Employee employee={id, name, email, password, is_manager,1,0};
+    write(fd, &employee, sizeof(employee));
     close(fd);
     return 1;
 }
@@ -94,7 +93,7 @@ int modify_employee(const char *name, const char *email, const char* password, i
         return 0;
     }
     int id = getemployeeid(email);
-    Employee emp={id, name, email, password, is_manager};
+    Employee emp={id, name, email, password, is_manager, 1,0};
     while(read(fd, &emp, sizeof(emp))>0) {
         if(strcmp(id, emp.id)==0) {
             //id already exists
@@ -146,6 +145,26 @@ int change_admin_password(const char* email, const char* password) {
         }
     }
     close(fd);
+    return 0;
+}
+int activate_employee(const char *email, int active_status) {
+    const char* file_path = "../db/employees.db";
+    int fd = open(file_path, O_RDWR,0777);
+    if (fd == -1) {
+        perror("Failed to open file");
+        return 0;
+    }
+    Employee emp;
+    while (read(fd, &emp, sizeof(emp)) > 0) {
+        if(strcmp(email, emp.email) == 0) {
+            //id already exists
+            lseek(fd, -sizeof(emp), SEEK_CUR);
+            emp.account_active=active_status;
+            write(fd, &emp, sizeof(emp));
+            close(fd);
+            return 1;
+        }
+    }
     return 0;
 }
 #endif // ADMINTASKS_H

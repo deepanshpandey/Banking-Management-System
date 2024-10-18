@@ -8,8 +8,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include "../db/db.h"
-#include "../db/ottasks.h"
-#include "../db/datetimetasks.h"
+#include "../datetime_ot/ottasks.h"
+#include "../datetime_ot/datetimetasks.h"
 
 void view_transactions(int account_id, int new_socket) {
     const char* file_path = "../db/transactions.db";

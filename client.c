@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,6 +45,10 @@ int main() {
 
         fgets(message, BUFFER_SIZE, stdin);
         message[strcspn(message, "\n")] = '\0';
+        if(strcmp(message,"terminate")==0) {
+            close(sock);
+            return 0;
+        }
 
         if (write(sock, message, strlen(message)) < 0) {
             return 1;
@@ -57,7 +62,6 @@ int main() {
 
         printf("%s", server_reply);
     }
-
     close(sock);
     return 0;
 }
