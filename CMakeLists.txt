@@ -18,7 +18,4 @@ add_executable(server server.c
         datetime_ot/ottasks.h
 )
 add_executable(client client.c)
-add_executable(adminCreator adminCreator.c
-        datetime_ot/ottasks.h
-)
-add_executable(ocr ocr.c)
+add_executable(adminCreator adminCreator.c)

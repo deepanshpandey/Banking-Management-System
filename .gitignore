@@ -1,0 +1,12 @@
+# CLion-specific files
+/.idea/
+.gitignore
+.idea/
+cmake-build-debug/
+/cmake-build-debug/
+cmake-build-release/
+*.out
+*.iml
+client
+server
+adminCreator
