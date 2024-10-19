@@ -34,7 +34,7 @@ gcc adminCreator.c -o adminCreator && ./adminCreator
 ```
 gcc server.c -o server && ./server
 ```
-now in another terminal run the following commands
+- To compile and run the Client, Now in another terminal run the following commands
 ```
 gcc client.c -o client && ./client 
 ```
