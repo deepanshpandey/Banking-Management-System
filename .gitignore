@@ -10,3 +10,7 @@ cmake-build-release/
 client
 server
 adminCreator
+.db/admin.db
+.db/client.db
+.db/server.db
+.db/adminCreator.db

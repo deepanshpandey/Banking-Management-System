@@ -104,6 +104,5 @@ int main() {
     if (c2 == 'y') {
         add_admin();;
     }
-
     return 0;
 }
