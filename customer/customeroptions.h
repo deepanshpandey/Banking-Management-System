@@ -16,10 +16,10 @@ void customer_menu(int new_socket) {
     bool logout = false;
     cust_retry:
     char password[50], email[50];
-    write(new_socket, "Enter Email:", 12);
+    write(new_socket, "Enter Email: ", 13);
     read(new_socket, email, sizeof(email)-1);
     email[strcspn(email, "\n")] = '\0';
-    write(new_socket, "Enter Password:", 15);
+    write(new_socket, "Enter Password: ", 16);
     read(new_socket, password, sizeof(password)-1);
     password[strcspn(password, "\n")] = '\0';
     if(verify_customer(email, password)==1) {

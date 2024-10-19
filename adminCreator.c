@@ -39,7 +39,7 @@ void clear_db() {
     size_t num_files = sizeof(db_files) / sizeof(db_files[0]);
 
     for (size_t i = 0; i < num_files; ++i) {
-        int fd = open(db_files[i], O_CREAT | O_RDWR | O_TRUNC, 0777);
+        int fd = open(db_files[i], O_CREAT | O_RDWR | O_TRUNC, 0666);
         if (fd == -1) {
             printf("Failed to clear database: %s\n", db_files[i]);
         } else {
@@ -51,7 +51,7 @@ void clear_db() {
 }
 void add_admin() {
     Admin admin;
-    const int fd = open("db/admins.db", O_CREAT | O_RDWR | O_APPEND, 0777);
+    const int fd = open("db/admins.db", O_CREAT | O_RDWR | O_APPEND, 0666);
     if (fd == -1) {
         perror("Failed to open file db/admins.db");
         return;
@@ -85,6 +85,92 @@ void add_admin() {
     }
     close(fd);
 }
+void clear_logins(int choice) {
+   if (choice==1) {
+       const char *db_files[] = {"db/admins.db", "db/employees.db", "db/customers.db"};
+       size_t num_files = sizeof(db_files) / sizeof(db_files[0]);
+
+       for (size_t i = 0; i < num_files; ++i) {
+           int fd = open(db_files[i], O_CREAT | O_RDWR , 0666);
+
+           if (fd == -1) {
+             printf("Failed to open file: %s\n", db_files[i]);
+           }
+           else {
+               if(i==0) {
+                   Admin admin;
+                   while (read(fd, &admin, sizeof(Admin)) > 0) {
+                       admin.login_status = 0;
+                       lseek(fd, -sizeof(Admin), SEEK_CUR);
+                       write(fd, &admin, sizeof(Admin));
+                   }
+                   printf("Cleared logins for %s\n", db_files[i]);
+                   close(fd);
+               }
+               if (i==1) {
+                   Employee emp;
+                       while (read(fd, &emp, sizeof(Employee)) > 0) {
+                          emp.login_status = 0;
+                          lseek(fd, -sizeof(Employee), SEEK_CUR);
+                          write(fd, &emp, sizeof(Employee));
+                       }
+                   printf("Cleared logins for %s\n", db_files[i]);
+                     close(fd);
+               }
+               if (i==2) {
+                   Customer cust;
+                       while (read(fd, &cust, sizeof(Customer)) > 0) {
+                          cust.login_status = 0;
+                          lseek(fd, -sizeof(Customer), SEEK_CUR);
+                          write(fd, &cust, sizeof(Customer));
+                       }
+                   printf("Cleared logins for %s\n", db_files[i]);
+                     close(fd);
+               }
+          }
+       }
+   }
+    else {
+        printf("\nWhich database to clear logins\n1. Admins\n2. Employees\n3. Customers\n");
+        int i;
+        scanf("%d", &i);
+        i--;
+        const char *db_files[] = {"db/admins.db", "db/employees.db", "db/customers.db"};
+        int fd = open(db_files[i], O_CREAT | O_RDWR , 0666);
+        if(i==0) {
+            Admin admin;
+            while (read(fd, &admin, sizeof(Admin)) > 0) {
+                admin.login_status = 0;
+                lseek(fd, -sizeof(Admin), SEEK_CUR);
+                write(fd, &admin, sizeof(Admin));
+            }
+            printf("Cleared logins for %s\n", db_files[i]);
+            close(fd);
+        }
+        if (i==1) {
+            Employee emp;
+            while (read(fd, &emp, sizeof(Employee)) > 0) {
+                emp.login_status = 0;
+                lseek(fd, -sizeof(Employee), SEEK_CUR);
+                write(fd, &emp, sizeof(Employee));
+            }
+            printf("Cleared logins for %s\n", db_files[i]);
+            close(fd);
+        }
+        if (i==2) {
+            Customer cust;
+            while (read(fd, &cust, sizeof(Customer)) > 0) {
+                cust.login_status = 0;
+                lseek(fd, -sizeof(Customer), SEEK_CUR);
+                write(fd, &cust, sizeof(Customer));
+            }
+            printf("Cleared logins for %s\n", db_files[i]);
+            close(fd);
+        }
+        close(fd);
+    }
+}
+
 
 int main() {
     char c,c1,c2;
@@ -103,6 +189,14 @@ int main() {
     scanf(" %c", &c2);
     if (c2 == 'y') {
         add_admin();;
+    }
+    printf("\nDo you wish to clear all Logins or select specific databse? \n'y' for all / 'n' to select specific: ");
+    scanf(" %c", &c2);
+    if (c2 == 'y') {
+        clear_logins(1);
+    }
+    else {
+        clear_logins(0);
     }
     return 0;
 }

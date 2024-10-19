@@ -26,6 +26,11 @@ This project is a part of the C programming course at the Faculty of Software Sy
 ## How to run
 this project has been tested on Ubuntu 20.04 to 24.10 and should work on any Linux distribution.
 run the following commands in a terminal in the project directory.
+- To setup Database files and directories, run the following command.
+```
+gcc adminCreator.c -o adminCreator && ./adminCreator
+```
+- To compile and run the server, run the following commands
 ```
 gcc server.c -o server && ./server
 ```
@@ -33,7 +38,9 @@ now in another terminal run the following commands
 ```
 gcc client.c -o client && ./client 
 ```
-Client supports multithreading and can be run multiple times to simulate multiple users.
+- Client supports multithreading and can be run multiple times to simulate multiple users.
+- To clear login data, run the adminCreator.c Program and follow the on-screen instructions.
+
 ### Note
 - If you are using a Operating System other than Ubuntu or Linux (say Windows or MacOS) , you may need to change the code a little bit to make it work.
 - If you found any bugs or issues, please report them.
@@ -49,4 +56,4 @@ gcc ocr.c -o ocr && ./ocr
 gcc adminCreator.c -o ac && ./ac
 ```
 - This program is made using JetBrains CLion and uses Cmake.
-- 
+- The adminCreator.c Program is used to create a new admin account or clear the databases and logins.
