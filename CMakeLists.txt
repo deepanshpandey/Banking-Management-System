@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
-project(untitled C)
+project(BMS C)
 
 set(CMAKE_C_STANDARD 11)
 add_compile_options(-Wno-int-conversion)
@@ -18,4 +18,3 @@ add_executable(server server.c
         datetime_ot/ottasks.h
 )
 add_executable(client client.c)
-add_executable(adminCreator adminCreator.c)

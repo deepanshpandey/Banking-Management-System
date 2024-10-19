@@ -171,7 +171,7 @@ void admin_menu(int new_socket) {
         }
     }
     else {
-        write(new_socket, "Login Failed. Try Again?\nType 1 for yes or 0 for no :", 52);
+        write(new_socket, "Login Failed / Already Logged in. Try Again?\nType 1 for yes or 0 for no :", 70);
         bzero(buffer, BUFFER_SIZE);
         read(new_socket, buffer, sizeof(buffer));
         if(atoi(buffer)==1) {

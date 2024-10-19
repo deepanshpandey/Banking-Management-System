@@ -56,4 +56,4 @@ gcc ocr.c -o ocr && ./ocr
 gcc adminCreator.c -o ac && ./ac
 ```
 - This program is made using JetBrains CLion and uses Cmake.
-- The adminCreator.c Program is used to create a new admin account or clear the databases and logins.
+- The adminCreator.c is a simple program that can be used to create a new admin account or clear the databases and logins.

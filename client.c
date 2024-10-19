@@ -2,11 +2,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <termios.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define PORT 8091
+#define PORT 8090
 #define BUFFER_SIZE 10240
+
+void hide_input() {
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    tty.c_lflag &= ~ECHO; // Disable echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+}
+void show_input() {
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    tty.c_lflag |= ECHO;  // Enable echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+}
+int check_for_password(char *server_reply) {
+    const char *password_prompts[] = {
+        "Enter Password",
+        "Enter Employee Password",
+        "Enter Customer Password",
+        "Enter New Password"
+    };
+
+    for (int i = 0; i < sizeof(password_prompts) / sizeof(password_prompts[0]); i++) {
+        if (strstr(server_reply, password_prompts[i])) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 int main() {
     int sock;
@@ -39,26 +68,33 @@ int main() {
     printf("%s", server_reply);
 
     while (1) {
-        // printf("Client input\n");
-        bzero(message, BUFFER_SIZE);
-        bzero(server_reply, BUFFER_SIZE);
+        if(check_for_password(server_reply)){
+            hide_input();
+            fflush(stdin);
+            bzero(message, BUFFER_SIZE);
+            fgets(message, BUFFER_SIZE, stdin);
+            message[strcspn(message, "\n")] = '\0';
+            show_input();
+        }
+        else {
+            bzero(message, BUFFER_SIZE);
+            fgets(message, BUFFER_SIZE, stdin);
+            message[strcspn(message, "\n")] = '\0';
+        }
 
-        fgets(message, BUFFER_SIZE, stdin);
-        message[strcspn(message, "\n")] = '\0';
-        if(strcmp(message,"terminate")==0) {
+        if(strcmp(message,"e")==0) {
             close(sock);
             return 0;
         }
-
         if (write(sock, message, strlen(message)) < 0) {
             return 1;
         }
 
+        bzero(server_reply, BUFFER_SIZE);
         if (read(sock, server_reply, BUFFER_SIZE) < 0) {
             perror("Recv failed");
             break;
         }
-
         printf("%s", server_reply);
     }
     close(sock);

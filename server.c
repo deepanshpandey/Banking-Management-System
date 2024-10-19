@@ -11,11 +11,12 @@
 #include "employee/empoptions.h"
 #include "customer/customeroptions.h"
 
-#define PORT 8091
+#define PORT 8090
 #define BUFFER_SIZE 10240
 
 void *handle_client(void *socket_desc) {
     int new_socket = *(int *)socket_desc;
+    free(socket_desc);
     char buffer[BUFFER_SIZE];
     bool logout = false;
     while ( logout == false) {
@@ -74,12 +75,11 @@ void *handle_client(void *socket_desc) {
 
     printf("Client disconnected\n");
     close(new_socket);
-    free(socket_desc);
     return NULL;
 }
 
 int main() {
-    int server_fd, new_socket, *new_sock;
+    int server_fd, new_socket;
     struct sockaddr_in server, client;
     socklen_t client_len = sizeof(client);
     signal(SIGPIPE, SIG_IGN);
@@ -96,32 +96,43 @@ int main() {
 
     if (bind(server_fd, (struct sockaddr *)&server, sizeof(server)) < 0) {
         perror("Bind failed");
+        close(server_fd);
         return 1;
     }
 
     listen(server_fd, 3);
-
     printf("Waiting for incoming connections...\n");
-    while ((new_socket = accept(server_fd, (struct sockaddr *)&client, &client_len))) {
+
+    while (1) {
+
+        new_socket = accept(server_fd, (struct sockaddr *)&client, &client_len);
+
+        if (new_socket < 0) {
+            perror("Accept failed");
+            close(server_fd); // Close the server socket on accept error
+            return 1; // Optionally break the loop or return
+        }
+
         printf("Connection accepted\n");
 
         pthread_t client_thread;
-        new_sock = malloc(1);
+        int *new_sock = malloc(sizeof(int));
+
+        if (new_sock == NULL) {
+            perror("Could not allocate memory");
+            close(new_socket);
+            return 1;
+        }
+
         *new_sock = new_socket;
 
-        if (pthread_create(&client_thread, NULL, handle_client, (void *)new_sock) < 0) {
+        if (pthread_create(&client_thread, NULL, handle_client,new_sock) < 0) {
             perror("Could not create thread");
-            return 1;
+            close(new_socket); // **Close the socket if thread creation fails**
+            free(new_sock); // **Free allocated memory**
+            continue;
         }
 
         printf("Handler assigned\n");
     }
-
-    if (new_socket < 0) {
-        perror("Accept failed");
-        return 1;
-    }
-
-    close(server_fd);
-    return 0;
 }
