@@ -19,10 +19,11 @@ This project is a part of the C programming course at the Faculty of Software Sy
 - Multi-user support (via multi-threading)
 - User Session Limits
 - Account locking/Unlocking
+- Full record locking support
+- Follows ACID property for databases. 
 - etc.
 ## To-Do
-- Improve the code
-- Add Record Locking
+- Improve the code quality
 ## How to run
 this project has been tested on Ubuntu 20.04 to 24.10 and should work on any Linux distribution.
 run the following commands in a terminal in the project directory.
