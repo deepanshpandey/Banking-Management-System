@@ -11,7 +11,7 @@
 #include "employee/empoptions.h"
 #include "customer/customeroptions.h"
 
-#define PORT 8090
+#define PORT 8091
 #define BUFFER_SIZE 10240
 
 void *handle_client(void *socket_desc) {

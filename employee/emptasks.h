@@ -24,7 +24,9 @@ int verify_employee(const char *email, const char *password) {
         if(strcmp(email, emp.email) == 0 && strcmp(password, emp.password) == 0 && emp.login_status==0) {
             emp.login_status=1;
             lseek(fd, -sizeof(emp), SEEK_CUR);
+            fcntl(fd, F_RDLCK, sizeof(emp));
             write(fd, &emp, sizeof(emp));
+            fcntl(fd, F_UNLCK, sizeof(emp));
             close(fd);
             return 1; // Record found
         }
@@ -44,7 +46,9 @@ int verify_manager(const char *email, const char *password) {
         if(strcmp(email, emp.email) == 0 && strcmp(password, emp.password) == 0 && emp.is_manager==1 && emp.login_status==0) {
             emp.login_status=1;
             lseek(fd, -sizeof(emp), SEEK_CUR);
+            fcntl(fd, F_RDLCK, sizeof(emp));
             write(fd, &emp, sizeof(emp));
+            fcntl(fd, F_UNLCK, sizeof(emp));
             close(fd);
             return 1; // Record found
         }
@@ -63,7 +67,9 @@ int logoutemployee(const char *email) {
         if(strcmp(email, emp.email) == 0) {
             emp.login_status=0;
             lseek(fd, -sizeof(emp), SEEK_CUR);
+            fcntl(fd, F_SETLKW, sizeof(emp));
             write(fd, &emp, sizeof(emp));
+            fcntl(fd, F_UNLCK, sizeof(emp));
             close(fd);
             return 1; // Record found
         }
@@ -122,8 +128,10 @@ int change_customer_status(const char* email,int status) {
         if(strcmp(id, cust.id)==0) {
             //id already exists
             lseek(fd, -sizeof(cust), SEEK_CUR);
+            fcntl(fd, F_SETLKW, sizeof(cust));
             cust.account_active=status;
             write(fd, &cust, sizeof(cust));
+            fcntl(fd, F_UNLCK, sizeof(cust));
             close(fd);
             return 1;
         }
@@ -144,12 +152,15 @@ int change_emp_password(const char* email, const char* password) {
         if(strcmp(email, emp.email)==0) {
             //id already exists
             lseek(fd, -sizeof(emp), SEEK_CUR);
+            fcntl(fd, F_SETLKW, sizeof(emp));
             strcpy(emp.password, password);
             write(fd, &emp, sizeof(emp));
+            fcntl(fd, F_UNLCK, sizeof(emp));
             close(fd);
             return 1;
         }
     }
+    fcntl(fd, F_UNLCK, sizeof(emp));
     close(fd);
     return 0;
 }
@@ -164,8 +175,9 @@ int add_customer(const char *name, const char *email, const char *phone, const c
     int login_status=0;
     int id= generatecustomerid();
     Customer customer={id, name, email, phone, password, balance, account_active,login_status};
+    fcntl(fd, F_SETLKW, sizeof(customer));
     write(fd, &customer, sizeof(customer));
-
+    fcntl(fd, F_UNLCK, sizeof(customer));
     close(fd);
     return id;
 }

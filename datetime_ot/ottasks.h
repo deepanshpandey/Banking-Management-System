@@ -22,7 +22,9 @@ int generateemployeeid() {
     otdata.highest_employee_id = otdata.highest_employee_id + 1;
     id = id+1;
     lseek(fd, 0, SEEK_SET);
+    fcntl(fd, F_SETLKW, sizeof(otdata));
     write(fd, &otdata, sizeof(otdata));
+    fcntl(fd, F_UNLCK, sizeof(otdata));
     close(fd);
     return id;
 }
@@ -39,7 +41,9 @@ int generatecustomerid() {
     otdata.highest_customer_id = otdata.highest_customer_id + 1;
     id = id+1;
     lseek(fd, 0, SEEK_SET);
+    fcntl(fd, F_SETLKW, sizeof(otdata));
     write(fd, &otdata, sizeof(otdata));
+    fcntl(fd, F_UNLCK, sizeof(otdata));
     close(fd);
     return id;
 }
@@ -56,7 +60,9 @@ int generateloanid() {
     otdata.highest_loan_id = otdata.highest_loan_id + 1;
     id = id+1;
     lseek(fd, 0, SEEK_SET);
+    fcntl(fd, F_SETLKW, sizeof(otdata));
     write(fd, &otdata, sizeof(otdata));
+    fcntl(fd, F_UNLCK, sizeof(otdata));
     close(fd);
     return id;
 }
@@ -73,7 +79,9 @@ int generate_feedback_id() {
     otdata.highest_feedback_id = otdata.highest_feedback_id + 1;
     id = id+1;
     lseek(fd, 0, SEEK_SET);
+    fcntl(fd, F_SETLKW, sizeof(otdata));
     write(fd, &otdata, sizeof(otdata));
+    fcntl(fd, F_UNLCK, sizeof(otdata));
     close(fd);
     return id;
 }
@@ -90,7 +98,9 @@ int generate_admin_id() {
     otdata.highest_admin_id = otdata.highest_admin_id + 1;
     id = id+1;
     lseek(fd, 0, SEEK_SET);
+    fcntl(fd, F_SETLKW, sizeof(otdata));
     write(fd, &otdata, sizeof(otdata));
+    fcntl(fd, F_UNLCK, sizeof(otdata));
     close(fd);
     return id;
 }
@@ -107,7 +117,9 @@ int generate_transaction_id() {
     otdata.highest_transaction_id = otdata.highest_transaction_id + 1;
     id = id+1;
     lseek(fd, 0, SEEK_SET);
+    fcntl(fd, F_SETLKW, sizeof(otdata));
     write(fd, &otdata, sizeof(otdata));
+    fcntl(fd, F_UNLCK, sizeof(otdata));
     close(fd);
     return id;
 }

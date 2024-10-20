@@ -116,7 +116,9 @@ int apply_for_loan(const char* email, double loan_amt, int dur_year, int dur_mon
     DateTime dt;
     initializeDateTime(&dt);
     loan.application_date=dt;
+    fcntl(fd, F_SETLKW, sizeof(loan));
     write(fd2, &loan, sizeof(loan));
+    fcntl(fd, F_UNLCK, sizeof(loan));
     close(fd2);
     return 1;
 }
@@ -132,8 +134,10 @@ int assign_loan_to_employee(const char* email,int loan_id) { //pass loan id and 
         if(loan.loan_id==loan_id) {
             //id already exists
             lseek(fd, -sizeof(loan), SEEK_CUR);
+            fcntl(fd, F_SETLKW, sizeof(loan));
             loan.assigned_employee_id=getemployeeid2(email);
             write(fd, &loan, sizeof(loan));
+            fcntl(fd, F_UNLCK, sizeof(loan));
             close(fd);
             return 1;
         }
@@ -242,9 +246,11 @@ int modify_loan(int new_socket) {
                         if(cust.id==loan.customer_id) {
                             //id already exists
                             lseek(fd1, -sizeof(cust), SEEK_CUR);
+                            fcntl(fd, F_SETLKW, sizeof(cust));
                             cust.balance = cust.balance + loan.amount;
                             loan_transaction(loan.loan_id,cust.id, loan.amount);
                             write(fd1, &cust, sizeof(cust));
+                            fcntl(fd1, F_UNLCK, sizeof(cust));
                             break;
                         }
                     }
@@ -257,7 +263,10 @@ int modify_loan(int new_socket) {
         }
         case 2: {
             strcpy(loan.status, "Rejected");
+            fcntl(fd, F_SETLKW, sizeof(loan));
             write(new_socket, "Loan Rejected\n", 14);
+            write(fd, &loan, sizeof(loan));
+            fcntl(fd, F_UNLCK, sizeof(loan));
             break;
         }
         case 3: {
@@ -283,8 +292,8 @@ int modify_loan(int new_socket) {
             break;
             case 4:
                 bzero(buffer, BUFFER_SIZE);
-            sprintf(buffer, "Current Remaining Amount: %f\n", loan.remaining_amount);
-            write(new_socket, buffer, BUFFER_SIZE);
+                sprintf(buffer, "Current Remaining Amount: %f\n", loan.remaining_amount);
+                write(new_socket, buffer, BUFFER_SIZE);
             break;
             default:{
                 write(new_socket, "Invalid option. Please select again\n", 37);

@@ -42,7 +42,9 @@ int verify_customer(const char* email, const char* password) {
         if(strcmp(email, cust.email) == 0 && strcmp(password, cust.password) == 0 && cust.login_status==0) {
             cust.login_status=1;
             lseek(fd, -sizeof(cust), SEEK_CUR);
+            fcntl(fd,F_RDLCK,sizeof(cust));
             write(fd, &cust, sizeof(cust));
+            fcntl(fd, F_UNLCK, sizeof(cust));
             close(fd);
             return 1; // Record found
         }
@@ -60,7 +62,9 @@ int logoutcustomer(const char* email) {
     while (read(fd, &cust, sizeof(cust)) > 0) {
         if(strcmp(email, cust.email) == 0) {
             lseek(fd, -sizeof(cust), SEEK_CUR);
+            fcntl(fd,F_RDLCK,sizeof(cust));
             write(fd, &cust, sizeof(cust));
+            fcntl(fd,F_RDLCK,sizeof(cust));
             close(fd);
             return 1; // Record found
         }
@@ -80,8 +84,10 @@ int change_customer_password(const char* email, const char* password) {
         if(strcmp(email, cust.email)==0) {
             //id already exists
             lseek(fd, -sizeof(cust), SEEK_CUR);
+            fcntl(fd,F_RDLCK,sizeof(cust));
             strcpy(cust.password, password);
             write(fd, &cust, sizeof(cust));
+            fcntl(fd,F_RDLCK,sizeof(cust));
             close(fd);
             return 1;
         }
@@ -173,6 +179,7 @@ int transfer_money(const char* from_email, const char* to_email, double transfer
         if(strcmp(from_email, cust.email)==0) {
             //id already exists
             lseek(fd, -sizeof(cust), SEEK_CUR);
+            fcntl(fd, F_SETLKW, sizeof(cust));
             if(cust.balance>=transfer_amt) {
                 cust.balance-=transfer_amt;
                 rem_success=1;
@@ -187,6 +194,7 @@ int transfer_money(const char* from_email, const char* to_email, double transfer
             break;
         }
     }
+    fcntl(fd, F_UNLCK, sizeof(cust));
     close(fd);
 
     fd=open(file_path, O_RDWR);
@@ -194,6 +202,7 @@ int transfer_money(const char* from_email, const char* to_email, double transfer
         if(strcmp(to_email, cust.email)==0) {
             //id already exists
             lseek(fd, -sizeof(cust), SEEK_CUR);
+            fcntl(fd, F_SETLKW, sizeof(cust));
             cust.balance+=transfer_amt;
             add_success=1;
             write(fd, &cust, sizeof(cust));
@@ -203,6 +212,7 @@ int transfer_money(const char* from_email, const char* to_email, double transfer
             break;
         }
     }
+    fcntl(fd, F_UNLCK, sizeof(cust));
     close(fd);
 
     if(rem_success==1 && add_success==1 && event1==1 && event2==1) {//all events successful
@@ -216,8 +226,10 @@ int transfer_money(const char* from_email, const char* to_email, double transfer
             if(strcmp(from_email, cust.email)==0) {
                 //id already exists
                 lseek(fd, -sizeof(cust), SEEK_CUR);
+                fcntl(fd, F_SETLKW, sizeof(cust));
                 cust.balance+=transfer_amt;
                 write(fd, &cust, sizeof(cust));
+                fcntl(fd, F_SETLKW, sizeof(cust));
                 close(fd);
             }
         }
@@ -239,7 +251,9 @@ int add_feedback(const char* email, const char* feedback) {
     DateTime dt;
     initializeDateTime(&dt);
     feed.date_time = dt;
+    fcntl(fd, F_SETLKW, sizeof(feed));
     write(fd, &feed, sizeof(feed));
+    fcntl(fd, F_UNLCK, sizeof(feed));
     close(fd);
     return 1;
 }

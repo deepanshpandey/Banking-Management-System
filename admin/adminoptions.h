@@ -33,8 +33,9 @@ void admin_menu(int new_socket) {
             "5.Change password\n"
             "6.Logout\n"
             "Enter Your Choice: ";
-
-        write(new_socket, admin_menu, strlen(admin_menu));
+        bzero(buffer, BUFFER_SIZE);
+        sprintf(buffer, admin_menu);
+        write(new_socket, buffer, strlen(buffer));
         bzero(buffer, BUFFER_SIZE);
         read(new_socket, buffer, BUFFER_SIZE);
         int admin_option = atoi(buffer);

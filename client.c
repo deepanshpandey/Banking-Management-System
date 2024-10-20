@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define PORT 8090
+#define PORT 8091
 #define BUFFER_SIZE 10240
 
 void hide_input() {
