@@ -1,0 +1,87 @@
+classDiagram
+    class Admin {
+        +int adminID
+        +String name
+        +String email
+        +String password
+        +bool login_status
+        +addEmployee()
+        +viewFeedback()
+        +generateReports()
+    }
+
+    class Employee {
+        +int employeeID
+        +String name
+        +String email
+        +String password
+        +createCustomer()
+        +processLoan()
+        +manageAccount()
+    }
+
+    class Customer {
+        +int customerID
+        +String name
+        +String email
+        +String password
+        +bool login_status
+        +viewAccountDetails()
+        +requestLoan()
+        +giveFeedback()
+        +makeTransaction()
+    }
+
+    class Account {
+        +int accountID
+        +String accountType
+        +float balance
+        +addAccount()
+        +closeAccount()
+        +deposit()
+        +withdraw()
+        +viewBalance()
+    }
+
+    class Loan {
+        +int loanID
+        +float loanAmount
+        +String loanType
+        +String status
+        +applyForLoan()
+        +approveLoan()
+        +rejectLoan()
+        +makePayment()
+    }
+
+    class Transaction {
+        +int transactionID
+        +float amount
+        +String date
+        +String type
+        +processTransaction()
+        +reverseTransaction()
+    }
+
+    class Feedback {
+        +int feedbackID
+        +String message
+        +String date
+        +int rating
+        +leaveFeedback()
+    }
+
+Admin -- Employee : manages
+Admin -- Report : generates
+Employee -- Customer : serves
+Employee -- Account : manages
+Employee -- Loan : processes
+Employee -- Feedback : views
+Customer -- Account : owns
+Customer -- Transaction : initiates
+Customer -- Feedback : gives
+Customer -- Loan : requests
+Transaction -- Account : affects
+Loan -- Customer : "requested by"
+Loan -- Account : "disbursed to"
+Feedback -- Customer : given by
